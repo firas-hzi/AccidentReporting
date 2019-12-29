@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "474222211771",
+    "firebase_url": "https://accident-archive.firebaseio.com",
+    "project_id": "accident-archive",
+    "storage_bucket": "accident-archive.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:474222211771:android:e13cdd390cdfef57ca2f9e",
+        "android_client_info": {
+          "package_name": "com.example.accident_archive"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "474222211771-a826603045o5at4gsi7fmlgjgfm5hct3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAZVzIgObM3mCeY7Z30yogumuLT9-tXiBI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "474222211771-a826603045o5at4gsi7fmlgjgfm5hct3.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
