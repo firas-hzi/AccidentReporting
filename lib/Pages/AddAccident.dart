@@ -6,7 +6,6 @@ import 'package:accident_archive/widgets/TextStyle.dart';
 import '../External/Storage/StorageFactory.dart';
 import '../External/Storage/StorageInterface.dart';
 import 'package:flutter/material.dart';
-
 import 'home.dart';
 
 class AddAccident extends StatefulWidget {
@@ -60,6 +59,7 @@ class _AddAccidentState extends State<AddAccident> {
                       .pop(MaterialPageRoute(builder: (context) => Home()));
                 });
               }),
+        
         ],
       ),
       backgroundColor: Colors.blue[100],
@@ -71,6 +71,7 @@ class _AddAccidentState extends State<AddAccident> {
           child: SingleChildScrollView(
             child: Column(
               children: <Widget>[
+              
                 SizedBox(height: 10.0),
                 Center(
                     child: new Text(

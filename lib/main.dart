@@ -1,6 +1,6 @@
 import 'dart:async';
+import 'package:accident_archive/Pages/signin.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'External/Authentication/AuthFactory.dart';
 import 'External/Authentication/AuthInterface.dart';
 import 'Pages/home.dart';
@@ -27,7 +27,7 @@ class _MyAppState extends State<MyApp> {
   }
 
   Future<Timer> loadData() async {
-    return new Timer(Duration(seconds: 3), onDoneLoading);
+    return new Timer(Duration(seconds: 2), onDoneLoading);
   }
 
   onDoneLoading() async {
@@ -36,16 +36,8 @@ class _MyAppState extends State<MyApp> {
         Navigator.of(context)
             .pushReplacement(MaterialPageRoute(builder: (context) => Home()));
       } else {
-        iauth.signInWithFacebook().then((user) {
-          iauth.storeFirebseUser().whenComplete(() {
-            Navigator.of(context).pushReplacement(
-                MaterialPageRoute(builder: (context) => Home()));
-          }).catchError((onError) {
-            print(onError.toString());
-          });
-        }).catchError((onError) {
-          print(onError.toString());
-        });
+     Navigator.of(context)
+            .pushReplacement(MaterialPageRoute(builder: (context) => SignIn()));
       }
     });
   }
@@ -61,14 +53,14 @@ class _MyAppState extends State<MyApp> {
           fit: BoxFit.cover,
         ),
       ),
-      child: Center(
+     /* child: Center(
         child: Center(
           child: SpinKitWanderingCubes(
             color: Colors.blue,
             size: 50.0,
           ),
         ),
-      ),
+      ),*/
     );
   }
 }

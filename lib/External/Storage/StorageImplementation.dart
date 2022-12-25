@@ -1,3 +1,5 @@
+
+
 import 'package:firebase_auth/firebase_auth.dart';
 
 import 'StorageInterface.dart';
@@ -37,8 +39,8 @@ class StorageImplementation implements StorageInterface {
   }
 
   Future<FirebaseUser> currentFirebseUser() async {
-    final FirebaseUser user = await _auth.currentUser();
-    return user;
+     return  await _auth.currentUser();
+    
   }
 
   @override
@@ -53,15 +55,21 @@ class StorageImplementation implements StorageInterface {
   }
 
   @override
-  Future<Stream<QuerySnapshot>> selectById(String id) {
-    return currentFirebseUser().then((user) {
-      return userCollection
+  Future<List<Tire>> selectById(String id)async {
+    List<Tire> tires = new List();
+    FirebaseUser user = await currentFirebseUser();
+      QuerySnapshot querySnapshot = await userCollection
           .document(user.uid)
           .collection('accident')
           .document(id)
           .collection('tires')
-          .snapshots();
-    });
+         .getDocuments();
+
+         querySnapshot.documents.forEach((doc)
+         {
+tires.add(Tire.fromDocument(doc));
+         });
+    return tires;
   }
 
   @override
@@ -128,5 +136,44 @@ class StorageImplementation implements StorageInterface {
                   .delete()
                   .catchError((onError) {})
             }));
+  }
+
+ 
+
+  @override
+  Future<void> addImages(String url,String accidentId) {
+    return currentFirebseUser().then((user) {
+      userCollection.document(user.uid)
+      .collection("accident").document(accidentId)
+      .collection("images").document()
+      .setData({ 'url': url});
+       // .setData({'images': FieldValue.arrayUnion(images)});
+  });
+}
+
+  @override
+  Future<void> deleteImage(DocumentSnapshot image,String accidentId,) {
+  return currentFirebseUser().then((user) {
+      userCollection.document(user.uid).collection("accident")
+      .document(accidentId).collection("images").document(image.documentID).delete();
+       
+  });
+}
+
+  @override
+  Future<List<DocumentSnapshot>> getImages(String accidendId)async {
+    List<DocumentSnapshot> urls = new List();
+    FirebaseUser user = await currentFirebseUser();
+ QuerySnapshot querySnapshot= await
+    userCollection
+          .document(user.uid)
+          .collection("accident")
+          .document(accidendId)
+          .collection('images')
+          .getDocuments();
+querySnapshot.documents.forEach((document){
+urls.add(document);
+});
+     return urls;
   }
 }

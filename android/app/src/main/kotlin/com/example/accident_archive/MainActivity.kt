@@ -1,4 +1,4 @@
-package com.example.accident_archive
+package com.unfallen.accident_archive
 
 import androidx.annotation.NonNull;
 import io.flutter.embedding.android.FlutterActivity

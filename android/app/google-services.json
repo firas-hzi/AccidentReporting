@@ -8,12 +8,20 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:474222211771:android:e13cdd390cdfef57ca2f9e",
+        "mobilesdk_app_id": "1:474222211771:android:1eb585841901e3c5ca2f9e",
         "android_client_info": {
-          "package_name": "com.example.accident_archive"
+          "package_name": "com.unfallen.accident_archive"
         }
       },
       "oauth_client": [
+        {
+          "client_id": "474222211771-jfn0jr46cr3n2f54cml8fosmccfpo2bt.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.unfallen.accident_archive",
+            "certificate_hash": "815f49268cea8c00c0c64f7e469133101628a120"
+          }
+        },
         {
           "client_id": "474222211771-a826603045o5at4gsi7fmlgjgfm5hct3.apps.googleusercontent.com",
           "client_type": 3

@@ -1,6 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
-
 import 'package:accident_archive/External/Storage/StorageFactory.dart';
 import 'package:accident_archive/External/Storage/StorageInterface.dart';
 import 'package:accident_archive/Model/AccidentData.dart';
@@ -12,10 +10,9 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../External/Authentication/AuthFactory.dart';
 import '../External/Authentication/AuthInterface.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-
 import 'CreatePdf.dart';
 import 'PdfViewer.dart';
+import 'SelectMultiImages.dart';
 import 'UpdateAccident.dart';
 
 class Home extends StatefulWidget {
@@ -25,6 +22,9 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   Accident accident;
+  List<DocumentSnapshot> urls = new List();
+  List<Tire> tires = new List();
+  CreatePdf createPdf = new CreatePdf();
   InterfaceForeAuthFirebase iAuth = AuthFactory.getAuthFirebaseImplementation();
   StorageInterface iStorage = StorageFactory.getStorageImplementation();
   Stream<QuerySnapshot> querySnapshot;
@@ -34,6 +34,7 @@ class _HomeState extends State<Home> {
   @override
   void initState() {
     super.initState();
+
     accident = new Accident();
   }
 
@@ -47,19 +48,7 @@ class _HomeState extends State<Home> {
         ),
         centerTitle: true,
         backgroundColor: Colors.blue,
-        actions: <Widget>[
-          // FlatButton(
-          //   onPressed: () async {
-          //     await iAuth.facebookSignOut();
-          //     Navigator.of(context).pushReplacement(
-          //         MaterialPageRoute(builder: (context) => SignIn()));
-          //   },
-          //   child: Icon(
-          //     Icons.cloud_off,
-          //     color: Colors.white,
-          //   ),
-          // ),
-        ],
+        actions: <Widget>[],
       ),
       backgroundColor: Colors.blue[100],
       floatingActionButton: FloatingActionButton(
@@ -103,10 +92,21 @@ class _HomeState extends State<Home> {
                                 ),
                               ),
                               dense: true,
-                              leading: CircleAvatar(
-                                backgroundImage:
-                                    AssetImage('assets/images/crash.png'),
-                              ),
+                              leading: InkWell(
+                                  child: CircleAvatar(
+                                    backgroundImage:
+                                        AssetImage('assets/images/crash.png'),
+                                  ),
+                                  onTap: () async {
+                                    Navigator.of(context).push(
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                SelectMultiImages(
+                                                    accidentId: snapshot
+                                                        .data
+                                                        .documents[index]
+                                                        .documentID)));
+                                  }),
                               trailing: new IconButton(
                                 icon: Icon(
                                   Icons.update,
@@ -118,45 +118,45 @@ class _HomeState extends State<Home> {
                                   });
                                   accident = Accident.fromDocument(
                                       snapshot.data.documents[index]);
-                                  await initTire(accident.id).whenComplete((() {
-                                    setTire().then((tires) {
-                                      Navigator.of(context).push(
-                                          MaterialPageRoute(
-                                              builder: (context) =>
-                                                  UpdateAccident(
-                                                      accident, tires)));
-                                      setState(() {
-                                        isLoading = false;
-                                      });
-                                    });
-                                  }));
+                                  tires =
+                                      await iStorage.selectById(accident.id);
+
+                                  Navigator.of(context).push(MaterialPageRoute(
+                                      builder: (context) =>
+                                          UpdateAccident(accident, tires)));
+                                  setState(() {
+                                    isLoading = false;
+                                  });
                                 },
                               ),
                               onTap: () async {
                                 setState(() {
                                   isLoading = true;
                                 });
-
                                 accident = Accident.fromDocument(
                                     snapshot.data.documents[index]);
-                                await initTire(accident.id).whenComplete(() {
-                                  CreatePdf createPdf = new CreatePdf();
-                                  setTire().then((tires) {
-                                    createPdf
-                                        .createPdfFile(accident, tires)
-                                        .then((path) {
-                                      Navigator.of(context).push(
-                                        MaterialPageRoute(
-                                          builder: (_) => PdfViewer(
-                                            path: path,
-                                          ),
-                                        ),
-                                      );
-                                      setState(() {
-                                        isLoading = false;
-                                      });
-                                    });
+                                tires = await iStorage.selectById(accident.id);
+
+                                urls = await iStorage.getImages(accident.id);
+                                createPdf
+                                    .createPdfFile(accident, tires, urls)
+                                    .then((file) {
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (_) => PdfViewer(
+                                        file: file,
+                                      ),
+                                    ),
+                                  );
+                                  setState(() {
+                                    isLoading = false;
                                   });
+                                }).catchError((onError) {
+                                  setState(() {
+                                    isLoading = false;
+                                    
+                                  });
+                                 Scaffold.of(context).showSnackBar(SnackBar(content: Text('Try Again')));
                                 });
                               },
                               onLongPress: () {
@@ -176,51 +176,6 @@ class _HomeState extends State<Home> {
         ],
       ),
     );
-  }
-
-  Future<void> initTire(String id) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-
-    String tire;
-    iStorage.selectById(id).then((querySnapshot) {
-      querySnapshot.listen((data) => data.documents.forEach((doc) {
-            Tire tireFromDocument = Tire.fromDocument(doc);
-            var json = jsonEncode(tireFromDocument.toTireJson());
-            tire = jsonEncode(json);
-            switch (doc['size']) {
-              case 'VL':
-                prefs.setString('VL', tire);
-                break;
-              case 'VR':
-                prefs.setString('VR', tire);
-                break;
-              case 'HR':
-                prefs.setString('HR', tire);
-                break;
-              case 'HL':
-                prefs.setString('HL', tire);
-                break;
-            }
-          }));
-    });
-  }
-
-  Future<List<Tire>> setTire() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    List<Tire> tires = new List();
-    Tire tireVL = Tire.fromJson(
-        json.decode(json.decode(prefs.getString('VL')).toString()));
-    Tire tireVR = Tire.fromJson(
-        json.decode(json.decode(prefs.getString('VR')).toString()));
-    Tire tireHL = Tire.fromJson(
-        json.decode(json.decode(prefs.getString('HL')).toString()));
-    Tire tireHR = Tire.fromJson(
-        json.decode(json.decode(prefs.getString('HR')).toString()));
-    tires.add(tireVL);
-    tires.add(tireVR);
-    tires.add(tireHL);
-    tires.add(tireHR);
-    return tires;
   }
 
   Future<void> _deleteDialog(DocumentSnapshot documentSnapshot) async {

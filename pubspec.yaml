@@ -1,31 +1,33 @@
 name: accident_archive
 description: A new Flutter project.
 
-version: 1.0.0+2
+version: 1.0.0+5
 
 environment:
-  sdk: ">=2.2.0 <3.0.0"
+  sdk: ">=2.2.2 <3.0.0"
 
 dependencies:
   flutter:
     sdk: flutter
 
-  firebase_auth: ^0.15.2
-  cloud_firestore: ^0.13.0+1
-  flutter_facebook_login: ^3.0.0
-  splashscreen: ^1.2.0
-  flutter_spinkit: ^4.1.1+1
-  datetime_picker_formfield: ^0.4.3
-  json_serializable: ^3.2.3
-  build_runner: ^1.7.2
-  provider: ^3.2.0
-  pdf: ^1.3.26
-  path_provider: ^0.4.1
-  flutter_full_pdf_viewer: ^1.0.6
-  simple_share: ^0.0.1+4
-  shared_preferences: ^0.5.6
+  firebase_auth: 
+  cloud_firestore: 
+  flutter_facebook_login: 
+  splashscreen:
+  flutter_spinkit: 
+  datetime_picker_formfield: 
+  flutter_auth_buttons:
+  multi_image_picker: 
+  pdf:
+  path_provider:
+  flutter_full_pdf_viewer: 
+  printing:
+  google_sign_in: 
+  photo_view:
+  firebase_storage: 
+  cached_network_image: 
+  cupertino_icons: 
 
-  cupertino_icons: ^0.1.2
 
 dev_dependencies:
   flutter_test:

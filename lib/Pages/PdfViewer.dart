@@ -1,11 +1,12 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_full_pdf_viewer/full_pdf_viewer_scaffold.dart';
-import 'package:simple_share/simple_share.dart';
+import 'package:printing/printing.dart';
+import 'dart:io';
+
 
 class PdfViewer extends StatelessWidget {
-  final String path;
-  const PdfViewer({Key key, this.path}) : super(key: key);
+  final File file;
+  const PdfViewer({Key key, this.file}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -19,15 +20,12 @@ class PdfViewer extends StatelessWidget {
               ),
               label: Text(''),
               onPressed: () async {
-                final uri = Uri.file(path);
-                print(uri.toString());
-                await SimpleShare.share(
-                  uri: uri.toString(),
-                );
+          await Printing.sharePdf(bytes: file.readAsBytesSync(), filename: 'my-document.pdf');
+             
               }),
         ],
       ),
-      path: path,
+      path: file.path,
     );
   }
 }
